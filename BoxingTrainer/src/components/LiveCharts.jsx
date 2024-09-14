@@ -33,6 +33,7 @@ const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
                     // Keep only the last 10 data points for performance
                     return updatedData.slice(-10);
                 }
+                
                 return updatedData;
             });
         }, 1000); // Update every second
