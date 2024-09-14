@@ -11,8 +11,8 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
-    // CHANGE TO FETCH VELOCITY DATA
+const RollChart = ({ isRecording, data, setData }) => {
+    // REPLACE WITH API TO ROLL FETCH DATA -JOSEPH
     useEffect(() => {
         if (!isRecording) return;
 
@@ -26,10 +26,6 @@ const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
             setData((prevData) => {
                 const updatedData = [...prevData, newDataPoint];
 
-                if (newDataPoint.velocity > 500) {
-                    punchfunction((punch += 1));
-                }
-
                 if (updatedData.length > 10) {
                     // Keep only the last 10 data points for performance
                     return updatedData.slice(-10);
@@ -37,7 +33,7 @@ const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
 
                 return updatedData;
             });
-        }, 1000); // CHANGE TO UPDATE EVERY 10MS
+        }, 1000); // Update every second // CHANGE TO 10MS
 
         return () => clearInterval(interval); // Cleanup interval on component unmount
     }, [isRecording, data, setData]);
@@ -64,4 +60,4 @@ const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
     );
 };
 
-export default LiveChart;
+export default RollChart;

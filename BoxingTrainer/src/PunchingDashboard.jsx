@@ -1,30 +1,77 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
-import LiveChart from './LiveCharts';
+import LiveChart from './components/LiveCharts';
+import RollChart from './components/RollChart';
+import Stopwatch from './components/Stopwatch';
 
 const PunchingDashboard = () => {
+    const [time, setTime] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+
+    useEffect(() => {
+        let interval = null;
+        if (isRunning) {
+            interval = setInterval(() => {
+                setTime((prevTime) => prevTime + 1);
+            }, 1000);
+        } else {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [isRunning]);
+
     const [isRecording, setIsRecording] = useState(false);
     const [pCount, setpCount] = useState(0);
-    const [data, setData] = useState([{ name: '0', velocity: 0 }]);
+    const [acceldata, setAData] = useState([{ name: '0', velocity: 0 }]);
+    const [rolldata, setRData] = useState([{ name: '0', roll: 0 }]);
+    const [fastest, setFastest] = useState(0);
+    const [avg, setAvg] = useState('0.00'); // Initialize avg with a default value
+
+    useEffect(() => {
+        // Function to calculate avg
+        const calculateAvg = () => {
+            if (time > 0) {
+                const minutes = Math.floor(time / 60);
+                const sec = time % 60; // Remainder of seconds
+                const newAvg = (pCount / (minutes + sec / 60)).toFixed(2); // Convert seconds to fraction of a minute
+                setAvg(newAvg); // Update avg value
+            } else {
+                setAvg('N/A'); // Handle invalid time
+            }
+        };
+
+        // Set interval to update avg every 100ms
+        const interval = setInterval(() => {
+            calculateAvg();
+        }, 100);
+
+        // Cleanup interval when the component unmounts
+        return () => clearInterval(interval);
+    }, [pCount, time]);
 
     // Initialize the timer hook
 
     // Handle start button click
     const handleStart = () => {
+        setIsRunning(true);
         setIsRecording(true);
     };
 
     // Handle stop button click
     const handleStop = () => {
+        setIsRunning(false);
         setIsRecording(false);
     };
 
     // Handle clear button click
     const handleClear = () => {
-        setData([{ name: '0', velocity: 0 }]);
+        setAData([{ name: '0', velocity: 0 }]);
         setpCount(0);
         // Reset the timer to zero
         setIsRecording(false);
+        setIsRunning(false);
+        setTime(0);
     };
 
     return (
@@ -34,6 +81,13 @@ const PunchingDashboard = () => {
             </h1>
 
             {/* Stopwatch Display */}
+            <Stopwatch
+                time={time}
+                isRunning={isRunning}
+                onStart={handleStart}
+                onStop={handleStop}
+                onReset={handleClear}
+            />
 
             {/* Start, Stop, and Clear buttons */}
             <div className="mb-6">
@@ -69,10 +123,10 @@ const PunchingDashboard = () => {
                     <div className="h-60 bg-gray-200 flex justify-center items-center">
                         <LiveChart
                             isRecording={isRecording}
-                            data={data}
+                            data={acceldata}
                             punch={pCount}
                             punchfunction={setpCount}
-                            setData={setData}
+                            setData={setAData}
                         />
                     </div>
                 </div>
@@ -91,20 +145,22 @@ const PunchingDashboard = () => {
                 {/* Punch Count Graph */}
                 <div className="bg-white shadow-lg rounded-lg p-6">
                     <h2 className="text-xl font-semibold mb-4">Punches</h2>
-                    <div className="h-48 bg-gray-200 flex justify-center items-center">
-                        <p className="text-gray-500">
-                            Punches Graph Placeholder
-                        </p>
+                    <div className="h-48 bg-gray-200 flex justify-around items-center">
+                        <p className="text-gray-500">{fastest}</p>
+                        <p className="text-gray-500">{avg}</p>
                     </div>
                 </div>
 
                 {/* Hand Height Graph */}
                 <div className="bg-white shadow-lg rounded-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Hand Height</h2>
+                    <h2 className="text-xl font-semibold mb-4">Roll Yaw</h2>
                     <div className="h-48 bg-gray-200 flex justify-center items-center">
-                        <p className="text-gray-500">
-                            Hand Height Graph Placeholder
-                        </p>
+                        <RollChart
+                            data={rolldata}
+                            isRecording={isRecording}
+                            setData={setRData}
+                        ></RollChart>
+                        <p className="text-gray-500">Bad Punches</p>
                     </div>
                 </div>
             </div>

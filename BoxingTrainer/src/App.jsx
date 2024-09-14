@@ -1,6 +1,6 @@
 import React from 'react';
 
-import PunchingDashboard from './Components/PunchingDashboard';
+import PunchingDashboard from './PunchingDashboard';
 
 const App = () => {
     return (
