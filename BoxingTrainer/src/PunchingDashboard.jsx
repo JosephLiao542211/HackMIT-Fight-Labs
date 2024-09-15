@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import LiveChart from './components/LiveCharts';
 import RollChart from './components/RollChart';
 import Stopwatch from './components/Stopwatch';
+import AvgChart from './components/AvgpChart';
 
 const PunchingDashboard = () => {
     const [time, setTime] = useState(0);
@@ -25,8 +26,28 @@ const PunchingDashboard = () => {
     const [pCount, setpCount] = useState(0);
     const [acceldata, setAData] = useState([{ name: '0', velocity: 0 }]);
     const [rolldata, setRData] = useState([{ name: '0', roll: 0 }]);
+    const [avgdata, setAvgData] = useState([{ name: 0, value: 0 }]);
+
     const [fastest, setFastest] = useState(0);
-    const [avg, setAvg] = useState('0.00'); // Initialize avg with a default value
+    const [avg, setAvg] = useState(0.0); // Initialize avg with a default value
+
+    useEffect(() => {
+        // Whenever avg changes, add a new entry to avgdata
+        setAvgData((prevData) => {
+            const newDataPoint = {
+                name: time, // Use the `time` state as the timestamp
+                value: avg, // Use avg directly as a number
+            };
+            const updatedData = [...prevData, newDataPoint];
+
+            if (updatedData.length > 10) {
+                // Keep only the last 10 data points for performance
+                return updatedData.slice(-10);
+            }
+
+            return updatedData;
+        });
+    }, [avg]); // Dependency array includes avg and time
 
     useEffect(() => {
         // Function to calculate avg
@@ -146,7 +167,7 @@ const PunchingDashboard = () => {
                 <div className="bg-white shadow-lg rounded-lg p-6">
                     <h2 className="text-xl font-semibold mb-4">Punches</h2>
                     <div className="h-48 bg-gray-200 flex justify-around items-center">
-                        <p className="text-gray-500">{fastest}</p>
+                        <AvgChart data={avgdata}></AvgChart>
                         <p className="text-gray-500">{avg}</p>
                     </div>
                 </div>
