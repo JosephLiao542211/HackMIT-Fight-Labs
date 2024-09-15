@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import LiveChart from './components/LiveCharts';
 import RollChart from './components/RollChart';
 import Stopwatch from './components/Stopwatch';
 import AvgChart from './components/AvgpChart';
+import BoxingAdviceComponent from './components/AI';
 
 const PunchingDashboard = () => {
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [pCount, setpCount] = useState(0);
+    const [acceldata, setAData] = useState([{ name: '0', velocity: 0 }]);
+    const [rolldata, setRData] = useState([{ name: '0', roll: 0 }]);
+    const [avgdata, setAvgData] = useState([{ name: 0, value: 0 }]);
+    const [avg, setAvg] = useState(0.0);
 
     useEffect(() => {
         let interval = null;
@@ -22,86 +27,65 @@ const PunchingDashboard = () => {
         return () => clearInterval(interval);
     }, [isRunning]);
 
-    const [isRecording, setIsRecording] = useState(false);
-    const [pCount, setpCount] = useState(0);
-    const [acceldata, setAData] = useState([{ name: '0', velocity: 0 }]);
-    const [rolldata, setRData] = useState([{ name: '0', roll: 0 }]);
-    const [avgdata, setAvgData] = useState([{ name: 0, value: 0 }]);
-
-    const [fastest, setFastest] = useState(0);
-    const [avg, setAvg] = useState(0.0); // Initialize avg with a default value
-
     useEffect(() => {
-        // Whenever avg changes, add a new entry to avgdata
         setAvgData((prevData) => {
-            const newDataPoint = {
-                name: time, // Use the `time` state as the timestamp
-                value: avg, // Use avg directly as a number
-            };
+            const newDataPoint = { name: time, value: avg };
             const updatedData = [...prevData, newDataPoint];
-
-            if (updatedData.length > 10) {
-                // Keep only the last 10 data points for performance
-                return updatedData.slice(-10);
-            }
-
-            return updatedData;
+            return updatedData.length > 10
+                ? updatedData.slice(-10)
+                : updatedData;
         });
-    }, [avg]); // Dependency array includes avg and time
+    }, [avg, time]);
 
     useEffect(() => {
-        // Function to calculate avg
         const calculateAvg = () => {
             if (time > 0) {
                 const minutes = Math.floor(time / 60);
-                const sec = time % 60; // Remainder of seconds
-                const newAvg = (pCount / (minutes + sec / 60)).toFixed(2); // Convert seconds to fraction of a minute
-                setAvg(newAvg); // Update avg value
+                const sec = time % 60;
+                const newAvg = (pCount / (minutes + sec / 60)).toFixed(2);
+                setAvg(newAvg);
             } else {
-                setAvg('N/A'); // Handle invalid time
+                setAvg('N/A');
             }
         };
 
-        // Set interval to update avg every 100ms
-        const interval = setInterval(() => {
-            calculateAvg();
-        }, 100);
-
-        // Cleanup interval when the component unmounts
+        const interval = setInterval(calculateAvg, 100);
         return () => clearInterval(interval);
     }, [pCount, time]);
 
-    // Initialize the timer hook
-
-    // Handle start button click
     const handleStart = () => {
         setIsRunning(true);
         setIsRecording(true);
     };
 
-    // Handle stop button click
     const handleStop = () => {
         setIsRunning(false);
         setIsRecording(false);
     };
 
-    // Handle clear button click
     const handleClear = () => {
         setAData([{ name: '0', velocity: 0 }]);
+        setAvgData([{ name: '0', velocity: 0 }]);
         setpCount(0);
-        // Reset the timer to zero
         setIsRecording(false);
         setIsRunning(false);
         setTime(0);
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 p-10">
-            <h1 className="text-3xl font-bold text-left mb-10">
-                Punching Data Dashboard
-            </h1>
+        <div className="min-h-screen bg-black text-cyan-400 p-10 font-mono">
+            <div className="flex justify-between items-center mb-10">
+                <h1 className="text-5xl font-bold text-cyan-300 tracking-wider">
+                    FIGHT LAB
+                </h1>
+                <div className="text-right">
+                    <p className="text-xs uppercase">
+                        Advanced Combat Analytics
+                    </p>
+                    <p className="text-2xl font-semibold">v2.0.24</p>
+                </div>
+            </div>
 
-            {/* Stopwatch Display */}
             <Stopwatch
                 time={time}
                 isRunning={isRunning}
@@ -110,38 +94,38 @@ const PunchingDashboard = () => {
                 onReset={handleClear}
             />
 
-            {/* Start, Stop, and Clear buttons */}
-            <div className="mb-6">
+            <div className="mb-6 space-x-4">
                 <button
                     onClick={handleStart}
-                    className={`px-4 py-2 rounded-lg text-white ${
+                    className={`px-6 py-3 rounded-md text-black font-bold transition-all duration-300 ${
                         isRecording
-                            ? 'bg-gray-400'
-                            : 'bg-green-500 hover:bg-green-600'
+                            ? 'bg-gray-800 cursor-not-allowed'
+                            : 'bg-cyan-400 hover:bg-cyan-300 hover:shadow-lg hover:shadow-cyan-400/50'
                     }`}
                     disabled={isRecording}
                 >
-                    Start Recording
+                    INITIATE
                 </button>
                 <button
                     onClick={handleStop}
-                    className="ml-4 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                    className="px-6 py-3 rounded-md bg-red-600 text-white font-bold hover:bg-red-500 transition-all duration-300 hover:shadow-lg hover:shadow-red-600/50"
                 >
-                    Stop Recording
+                    TERMINATE
                 </button>
                 <button
                     onClick={handleClear}
-                    className="ml-4 px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
+                    className="px-6 py-3 rounded-md bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/50"
                 >
-                    Clear Data
+                    RESET
                 </button>
             </div>
 
             <div className="grid grid-cols-5 gap-6 mb-6">
-                {/* Acceleration Graph (4/5 of the row) */}
-                <div className="col-span-4 bg-white shadow-lg rounded-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Acceleration</h2>
-                    <div className="h-60 bg-gray-200 flex justify-center items-center">
+                <div className="col-span-4 bg-gray-900 shadow-2xl rounded-md p-6 border-2 border-cyan-500">
+                    <h2 className="text-2xl font-bold mb-4 text-cyan-300 uppercase">
+                        Kinetic Force Analysis
+                    </h2>
+                    <div className="h-60 bg-black flex justify-center items-center rounded-md overflow-hidden border border-cyan-700">
                         <LiveChart
                             isRecording={isRecording}
                             data={acceldata}
@@ -152,39 +136,51 @@ const PunchingDashboard = () => {
                     </div>
                 </div>
 
-                {/* Punch Counter (1/5 of the row) */}
-                <div className="col-span-1 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-center items-center">
-                    <h2 className="text-xl font-semibold mb-4">Punches</h2>
-                    <div className="text-4xl font-bold text-gray-700">
+                <div className="col-span-1 bg-gray-900 shadow-2xl rounded-md p-6 flex flex-col justify-center items-center border-2 border-cyan-500">
+                    <h2 className="text-2xl font-bold mb-4 text-cyan-300 uppercase">
+                        Impact Tally
+                    </h2>
+                    <div className="text-7xl font-bold text-cyan-400 glow">
                         {pCount}
                     </div>
                 </div>
             </div>
 
-            {/* Second Row: 50/50 split for Punches and Hand Height */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Punch Count Graph */}
-                <div className="bg-white shadow-lg rounded-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Punches</h2>
-                    <div className="h-48 bg-gray-200 flex justify-around items-center">
-                        <AvgChart data={avgdata}></AvgChart>
-                        <p className="text-gray-500">{avg}</p>
+                <div className="bg-gray-900 shadow-2xl rounded-md p-6 border-2 border-cyan-500">
+                    <h2 className="text-2xl font-bold mb-4 text-cyan-300 uppercase">
+                        Combat Efficiency Metrics
+                    </h2>
+                    <div className="h-48 bg-black flex justify-around items-center rounded-md overflow-hidden border border-cyan-700">
+                        <AvgChart data={avgdata} />
+                        <p className="text-3xl font-bold text-cyan-400">
+                            {avg} <span className="text-lg">hits/min</span>
+                        </p>
                     </div>
                 </div>
 
-                {/* Hand Height Graph */}
-                <div className="bg-white shadow-lg rounded-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Roll Yaw</h2>
-                    <div className="h-48 bg-gray-200 flex justify-center items-center">
+                <div className="bg-gray-900 shadow-2xl rounded-md p-6 border-2 border-cyan-500">
+                    <h2 className="text-2xl font-bold mb-4 text-cyan-300 uppercase">
+                        Rotational Dynamics
+                    </h2>
+                    <div className="h-48 bg-black flex justify-center items-center rounded-md overflow-hidden border border-cyan-700">
                         <RollChart
                             data={rolldata}
                             isRecording={isRecording}
                             setData={setRData}
-                        ></RollChart>
-                        <p className="text-gray-500">Bad Punches</p>
+                        />
+                        <p className="text-xl font-bold text-red-500 ml-4 uppercase">
+                            Anomalous Vectors
+                        </p>
                     </div>
                 </div>
             </div>
+            <BoxingAdviceComponent
+                pcount={pCount}
+                averagePunch={avg}
+                velocityArray={acceldata}
+                totalTime={time}
+            ></BoxingAdviceComponent>
         </div>
     );
 };

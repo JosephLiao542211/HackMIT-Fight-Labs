@@ -12,7 +12,7 @@ const Stopwatch = ({ time, isRunning, onStart, onStop, onReset }) => {
     };
 
     return (
-        <div className="flex flex-col items-center p-4 bg-gray-100 rounded-lg shadow-md w-64">
+        <div className="flex flex-col items-center p-4 rounded-lg shadow-md w-64">
             <div className="text-4xl font-semibold mb-4">
                 {formatTime(time)}
             </div>
