@@ -12,40 +12,25 @@ import {
 } from 'recharts';
 
 const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
-    // CHANGE TO FETCH VELOCITY DATA
+    // Limit the data to 1000 points
+    const maxDataPoints = 1000;
+    const filteredData = data.slice(-maxDataPoints);
+
+    // Effect to monitor the velocity and call punchfunction when velocity < 6
     useEffect(() => {
-        if (!isRecording) return;
-
-        const interval = setInterval(() => {
-            const newVelocity = Math.floor(Math.random() * 1000); // Generate random velocity data
-            const newDataPoint = {
-                name: `${data.length}`,
-                velocity: newVelocity,
-            };
-
-            setData((prevData) => {
-                const updatedData = [...prevData, newDataPoint];
-
-                if (newDataPoint.velocity > 500) {
-                    punchfunction((punch += 1));
-                }
-
-                if (updatedData.length > 10) {
-                    // Keep only the last 10 data points for performance
-                    return updatedData.slice(-10);
-                }
-
-                return updatedData;
-            });
-        }, 1000); // CHANGE TO UPDATE EVERY 10MS
-
-        return () => clearInterval(interval); // Cleanup interval on component unmount
-    }, [isRecording, data, setData]);
+        // Check the last data point's velocity
+        if (filteredData.length > 0) {
+            const lastDataPoint = filteredData[filteredData.length - 1];
+            if (lastDataPoint.velocity > 13) {
+                punchfunction(punch + 1); // Increment punch count
+            }
+        }
+    }, [filteredData, punch, punchfunction]);
 
     return (
         <ResponsiveContainer width="100%" height="100%">
             <LineChart
-                data={data}
+                data={filteredData}
                 margin={{
                     top: 5,
                     right: 30,
@@ -54,7 +39,8 @@ const LiveChart = ({ isRecording, data, setData, punchfunction, punch }) => {
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis />
+                {/* Hide the XAxis ticks by setting tick={false} */}
+                <XAxis tick={false} />
                 <YAxis />
                 <Tooltip />
                 <Legend />

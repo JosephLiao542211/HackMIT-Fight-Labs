@@ -7,7 +7,7 @@ const App = () => {
     return (
         <div>
             <PunchingDashboard></PunchingDashboard>
-            <Arduino></Arduino>
+            {/* <Arduino></Arduino> */}
         </div>
     );
 };
