@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-    apiKey: '', // Keep your API key in .env for security reasons.
+    apiKey: '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', // Keep your API key in .env for security reasons.
     dangerouslyAllowBrowser: true,
 });
 
@@ -18,7 +18,7 @@ const createPrompt = (pcount, averagePunch, velocityArray, totalTime) => {
     - Average punches per minute: ${averagePunch}
     - Velocity data: ${velocityData}
     - Total time in seconds: ${totalTime}
-    Based on this data, provide advice on how the user can improve their boxing performance. Focus on speed, accuracy, and stamina, and give 2 criticisms and 2 compliments. speak naturally and break up your advice with "\ns"
+    Based on this data, provide advice on how the user can improve their boxing performance. Focus on speed, accuracy, and stamina, and give 2 criticisms and 2 compliments. MAKE SURE TO USE RELEVANT NUMBERS"
   `;
 };
 
