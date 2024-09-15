@@ -1,9 +1,7 @@
 import OpenAI from 'openai';
 
 // Initialize OpenAI client
-const openai = new OpenAI({
-    // apiKey: 'REPLACE WITH KEY', // Replace with your actual API key
-});
+const openai = new OpenAI({});
 
 // Example data
 const punchVelocities = [2.5, 3.0, 2.9, 3.1, 2.8, 3.2]; // Every 10ms
