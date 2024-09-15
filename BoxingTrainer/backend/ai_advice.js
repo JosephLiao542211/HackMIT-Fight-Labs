@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-    apiKey: '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', // Replace with your actual API key
+    apiKey: 'REPLACE WITH KEY', // Replace with your actual API key
 });
 
 // Example data
