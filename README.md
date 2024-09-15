@@ -3,7 +3,7 @@
 ## Real-time Fighting Coach 
 
 
-**Real-time Fighting Coach** is a project we developed for HackMIT '24, designed to provide real-time feedback and coaching for anyone from experience combat atheletes to inexperienced individuals in interested in emergency self-defense protection. Below is an overview of our project repositories that make up the entirety of our project.
+**Real-time Fighting Coach** is a project we developed for HackMIT '24, designed to provide real-time feedback and coaching for anyone from experience combat athletes to inexperienced individuals interested in emergency self-defense protection. Below is an overview of our project repositories that make up the entirety of our project.
 
 ---
 
