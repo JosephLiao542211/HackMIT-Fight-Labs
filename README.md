@@ -1,4 +1,5 @@
 # HackMIT '24 - Fight Labs
+![FightLab](https://github.com/user-attachments/assets/b9a4f290-96fb-434c-87a2-1372bc953fe1)
 
 ## Real-time Fighting Coach 
 
